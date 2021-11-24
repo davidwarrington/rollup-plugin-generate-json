@@ -6,6 +6,7 @@
     "author": "David Warrington <davidmwarrington+github@gmail.com>",
     "license": "MIT",
     "scripts": {
+        "test": "rollup -c tests/rollup.config.js",
         "lint": "eslint ."
     },
     "devDependencies": {
