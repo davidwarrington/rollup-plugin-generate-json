@@ -1,0 +1,11 @@
+{
+    "name": "rollup-plugin-generate-json",
+    "version": "1.0.0",
+    "main": "plugin/index.js",
+    "repository": "git@github.com:davidwarrington/rollup-plugin-generate-json",
+    "author": "David Warrington <davidmwarrington+github@gmail.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "rollup": "^2.60.1"
+    }
+}
