@@ -1,0 +1,7 @@
+{
+    "name": "Supports Plugins",
+    "plugins": [
+        "typescript",
+        "yaml"
+    ]
+}

@@ -3,8 +3,16 @@ import path from 'path';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rollup } from 'rollup';
 
+/** @typedef {import('rollup').Plugin} RollupPlugin */
+
 const PLUGIN_NAME = 'generate-json';
 const DEFAULT_OPTIONS = {
+    /** @type {string} */
+    input: undefined,
+    /** @type {string} */
+    output: undefined,
+    /** @type {'auto' | RollupPlugin[]} */
+    plugins: 'auto',
     replacer: null,
     space: 4,
 };
@@ -41,12 +49,23 @@ async function loadCompiledModule(fileName, bundledCode) {
     }
 }
 
-export default function GenerateJsonPlugin(options = DEFAULT_OPTIONS) {
+export default function GenerateJsonPlugin(pluginOptions = DEFAULT_OPTIONS) {
+    const options = { ...DEFAULT_OPTIONS, ...pluginOptions };
+
     return {
         name: PLUGIN_NAME,
+        options({ plugins }) {
+            if (options.plugins === 'auto') {
+                options.plugins = plugins;
+            }
+        },
         async generateBundle() {
             const input = path.resolve(process.cwd(), options.input);
-            const childBundle = await rollup({ input });
+            const plugins = Array.isArray(options.plugins)
+                ? options.plugins.filter(plugin => plugin.name !== PLUGIN_NAME)
+                : [];
+
+            const childBundle = await rollup({ input, plugins });
 
             const {
                 output: [{ code }],
