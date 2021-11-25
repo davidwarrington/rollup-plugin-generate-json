@@ -18,8 +18,8 @@ export default tests.map(test => {
 
     let plugins = [
         plugin({
-            input: path.join(testPath, '/src/schema.js'),
-            output: 'schema.json',
+            input: path.join(testPath, '/src/input.js'),
+            output: 'output.json',
         }),
     ];
 
@@ -30,7 +30,7 @@ export default tests.map(test => {
     return {
         input: path.join(testPath, '/src/index.js'),
         output: {
-            file: path.join(testPath, '/dist/output.js'),
+            file: path.join(testPath, '/dist/index.js'),
         },
         plugins,
     };

@@ -6,7 +6,7 @@
     "author": "David Warrington <davidmwarrington+github@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "test": "rollup -c tests/rollup.config.js",
+        "test": "rollup -c tests/rollup.config.js && jest",
         "lint": "eslint ."
     },
     "devDependencies": {
@@ -17,6 +17,7 @@
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-import": "^2.25.3",
         "eslint-plugin-prettier": "^4.0.0",
+        "jest": "^27.3.1",
         "prettier": "^2.4.1",
         "rollup": "^2.60.1",
         "tslib": "^2.3.1",
