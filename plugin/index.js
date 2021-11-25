@@ -75,11 +75,18 @@ export default function GenerateJsonPlugin(pluginOptions = DEFAULT_OPTIONS) {
             });
 
             const value = await loadCompiledModule(input, code);
+            const isFunction = typeof value === 'function';
+
+            const exportValue = isFunction ? value() : value;
 
             this.emitFile({
                 type: 'asset',
                 fileName: options.output,
-                source: JSON.stringify(value, options.replacer, options.space),
+                source: JSON.stringify(
+                    exportValue,
+                    options.replacer,
+                    options.space
+                ),
             });
         },
     };
