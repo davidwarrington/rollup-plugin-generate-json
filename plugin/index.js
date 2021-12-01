@@ -49,6 +49,7 @@ async function loadCompiledModule(fileName, bundledCode) {
     }
 }
 
+/** @returns {RollupPlugin} */
 export default function GenerateJsonPlugin(pluginOptions = DEFAULT_OPTIONS) {
     const options = { ...DEFAULT_OPTIONS, ...pluginOptions };
 
@@ -59,7 +60,7 @@ export default function GenerateJsonPlugin(pluginOptions = DEFAULT_OPTIONS) {
                 options.plugins = plugins;
             }
         },
-        async generateBundle() {
+        async buildStart() {
             const input = path.resolve(process.cwd(), options.input);
             const plugins = Array.isArray(options.plugins)
                 ? options.plugins.filter(plugin => plugin.name !== PLUGIN_NAME)
@@ -68,11 +69,13 @@ export default function GenerateJsonPlugin(pluginOptions = DEFAULT_OPTIONS) {
             const childBundle = await rollup({ input, plugins });
 
             const {
-                output: [{ code }],
+                output: [{ code, modules }],
             } = await childBundle.generate({
                 exports: 'default',
                 format: 'cjs',
             });
+
+            Object.keys(modules).forEach(file => this.addWatchFile(file));
 
             const value = await loadCompiledModule(input, code);
             const isFunction = typeof value === 'function';
