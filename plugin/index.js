@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { rollup } from 'rollup';
+import esbuild from 'esbuild';
 
 /** @typedef {import('rollup').Plugin} RollupPlugin */
 
@@ -22,6 +21,10 @@ function getDefaultFromCjs(namespace) {
     return namespace.__esModule ? namespace.default : namespace;
 }
 
+/**
+ * @param {string} fileName
+ * @param {string} bundledCode
+ */
 async function loadCompiledModule(fileName, bundledCode) {
     const resolvedFileName = fs.realpathSync(fileName);
     const extension = path.extname(resolvedFileName);
@@ -55,29 +58,24 @@ export default function GenerateJsonPlugin(pluginOptions = DEFAULT_OPTIONS) {
 
     return {
         name: PLUGIN_NAME,
-        options({ plugins }) {
+        options(config) {
+            const { plugins } = config;
+
             if (options.plugins === 'auto') {
                 options.plugins = plugins;
             }
         },
-        async buildStart() {
+        async generateBundle(outputOptions, bundle) {
             const input = path.resolve(process.cwd(), options.input);
-            const plugins = Array.isArray(options.plugins)
-                ? options.plugins.filter(plugin => plugin.name !== PLUGIN_NAME)
-                : [];
 
-            const childBundle = await rollup({ input, plugins });
+            const outputChunk = Object.values(bundle).find(
+                chunk => chunk.facadeModuleId === input
+            );
 
-            const {
-                output: [{ code, modules }],
-            } = await childBundle.generate({
-                exports: 'default',
+            const cjsOutput = await esbuild.transform(outputChunk.code, {
                 format: 'cjs',
             });
-
-            Object.keys(modules).forEach(file => this.addWatchFile(file));
-
-            const value = await loadCompiledModule(input, code);
+            const value = await loadCompiledModule(input, cjsOutput.code);
             const isFunction = typeof value === 'function';
 
             const exportValue = isFunction ? value() : value;

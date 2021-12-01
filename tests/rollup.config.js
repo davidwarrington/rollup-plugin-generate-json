@@ -28,9 +28,13 @@ export default tests.map(test => {
     }
 
     return {
-        input: path.join(testPath, '/src/index.js'),
+        input: [
+            path.join(testPath, '/src/index.js'),
+            path.join(testPath, '/src/input.js'),
+        ],
         output: {
-            file: path.join(testPath, '/dist/index.js'),
+            dir: path.join(testPath, '/dist'),
+            entryFileNames: '[name].js',
         },
         plugins,
     };
